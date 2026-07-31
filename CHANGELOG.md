@@ -1,3 +1,14 @@
+# 3.8.1
+
+## Build & Metadata
+
+- Migrated build configuration from `setup.py` to `pyproject.toml` using Poetry backend.
+- Updated project author and repository links to Nikita Denissov (`ndenissov`).
+
+## Documentation
+
+- Completely redesigned `README.md` with PyPI shields badges and comprehensive usage instructions.
+
 # 3.8.0
 
 ## General

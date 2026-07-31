@@ -1,229 +1,224 @@
 # FastDub
 
-Package for voice over subtitles:
+[![PyPI version](https://img.shields.io/pypi/v/fastdub.svg)](https://pypi.org/project/fastdub/)
+[![Downloads](https://static.pepy.tech/badge/fastdub)](https://pepy.tech/project/fastdub)
+[![Python versions](https://img.shields.io/pypi/pyversions/fastdub.svg)](https://pypi.org/project/fastdub/)
+[![License](https://img.shields.io/pypi/l/fastdub.svg)](https://github.com/ndenissov/FastDub/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/ndenissov/FastDub)](https://github.com/ndenissov/FastDub/stargazers)
 
-* with the ability to embed in video,
-* audio ducking,
-* dynamic voice changer for a single track. _Add **--voice-set-anchor** at the beginning of the subtitle line. (Applies
-  to
-  all
-  subsequent ones)_
-
-> pip install -U [FastDub](https://pypi.org/project/FastDub/)
+FastDub is a Python package and command-line utility for automated subtitle voiceovers, video dubbing, audio ducking, dynamic voice changing, subtitle translation, and YouTube integration.
 
 ---
 
-# Install for Ubuntu
+## Features
 
-> sudo apt update -y && sudo apt upgrade -y
->
-> sudo apt install python3 python3-pip ffmpeg [espeak](http://espeak.sourceforge.net/data/) libxml2-dev libxslt1-dev
->
-> ; libxml for translator functions
->
-> sudo python3 -m pip install -U pip setuptools wheel
->
-> sudo python3 -m pip install -U [FastDub](https://pypi.org/project/FastDub/)
+- **Automated Video Dubbing**: Generate speech from subtitle files (.srt, .vtt) and embed the audio into videos (.mp4, .mkv).
+- **Audio Ducking (Sidechain Compression)**: Dynamically lower original background audio level while speech is active.
+- **Dynamic Voice Changing**: Switch voices mid-track using subtitle anchors (`!:`).
+- **Subtitle Translation**: Auto-translate subtitles to target languages using Google Translate or alternative services.
+- **YouTube Integration**: Download video playlists/channels, search YouTube directly from CLI, and upload dubbed videos back to YouTube with translated titles and descriptions.
+- **Cross-Platform**: Support for SAPI voices on Windows and eSpeak/RHVoice on Linux.
 
-# Install all dependencies
+---
 
-> pip install FastDub[ALL]  # default
+## Installation
 
-# Youtube support
+### System Dependencies
 
-## Youtube argument group
+#### Ubuntu / Debian
 
-> pip install FastDub[YT]
-
-### Process all videos from a channel
-
-_To get the channel id if it only has a username, run the JS code in the browser console:_
-
-```javascript
-document.querySelector("body>link").href
+```bash
+sudo apt update -y && sudo apt upgrade -y
+sudo apt install -y python3 python3-pip ffmpeg espeak libxml2-dev libxslt1-dev
 ```
 
-**Then, in the input parameter,
-you can pass a link to the channel (with an id, not with a username) or a string of the format "c/CHANNEL_ID"**
+#### macOS
 
-_For example:_
-
-> python -m fastdub -i "c/[UCi-5OZ2tYuwMLIcEyOsbdRA](https://www.youtube.com/channel/UCi-5OZ2tYuwMLIcEyOsbdRA)" -yt
-
-## YouTube Search argument group
-
-That the input data was a request to YouTube, they must begin with "?".
-
-_For Example:_
-
-> python -m fastdub -i "?#python" -yt -yts-l 5
-
-## YouTube Upload argument group
-
-> pip install FastDub[YTU]
-
-To download, you need to go to [credentials](https://console.cloud.google.com/apis/credentials) (Create a new project if
-needed) > <kbd>+ Create credentials</kbd> > <kbd>OAuth Client ID</kbd> > <kbd>Desktop App</kbd>
-
-After filling in the required fields, <kbd>DOWNLOAD JSON</kbd> format and save to a working folder under the name
-_client_secrets.json_
-
-* Specifying the -ytu-ps argument as non-private may result in processing errors, but this was not observed during
-  testing.
-
-* Please note that video uploads require a large amount of [quota](https://console.cloud.google.com/iam-admin/quotas) (
-  default has 10,000 per day)
-
-# Subtitles translate
-
-### Translate argument group
-
-> pip install FastDub[TR]
-
-# Usage
-
-> python -m fastdub --help
-
+```bash
+brew install ffmpeg espeak
 ```
-usage: fastdub [-h] [-rc {0,1,2}] [-ra | --cleanup-audio | -n-ra | --no-cleanup-audio] [-ev | --export-video | -n-ev | --no-export-video]
-               [-l LANGUAGE] [-ll {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}] [-tc THREADS_COUNT] -i INPUT [-vf VIDEO_FORMAT]
-               [-sf SUBTITLES_FORMAT] [-En EXCLUDE [EXCLUDE ...]] [-Eu EXCLUDE_UNDERSCORE] [-sc | --sidechain | -n-sc | --no-sidechain]
+
+### Installing FastDub
+
+#### Via PyPI with pip
+
+```bash
+# Core package
+pip install FastDub
+
+# Install all optional dependencies (Translation + YouTube support)
+pip install "FastDub[ALL]"
+```
+
+#### Extra Feature Bundles
+
+| Extra | Description | Command |
+| :--- | :--- | :--- |
+| `TR` | Subtitle translation support | `pip install "FastDub[TR]"` |
+| `YT` | YouTube downloading and search | `pip install "FastDub[YT]"` |
+| `YTU` | YouTube video uploading | `pip install "FastDub[YTU]"` |
+| `ALL` | All optional features combined | `pip install "FastDub[ALL]"` |
+
+#### Via Poetry
+
+```bash
+poetry add fastdub --extras "all"
+```
+
+---
+
+## Quick Start
+
+### Basic Local Video Dubbing
+
+To voiceover all videos in a target directory:
+
+```bash
+fastdub -i ./input_folder -v "Yuriy" --no-sidechain -sf srt -vf mp4
+```
+
+Or using python module invocation:
+
+```bash
+python -m fastdub -i ./input_folder -l ru
+```
+
+### Subtitle Translation
+
+Translate subtitles to Russian before voice acting:
+
+```bash
+fastdub -i ./input_folder -tr -l ru -ts google
+```
+
+### YouTube Download & Dubbing
+
+Process a single YouTube video:
+
+```bash
+fastdub -yt -i "https://youtu.be/DD5UKQggXTc" -l ru
+```
+
+Process videos from a YouTube Search query:
+
+```bash
+fastdub -yt -yts -i "#python" -yts-l 5 -l ru
+```
+
+Process an entire YouTube channel:
+
+```bash
+fastdub -yt -i "c/UCi-5OZ2tYuwMLIcEyOsbdRA" -l ru
+```
+
+### YouTube Upload Setup
+
+To upload processed videos to YouTube (`FastDub[YTU]`):
+
+1. Go to [Google Cloud Console Credentials](https://console.cloud.google.com/apis/credentials).
+2. Create OAuth 2.0 Client ID for Desktop App.
+3. Download the JSON credentials file and place it in your working directory as `client_secrets.json`.
+4. Run FastDub with upload flags:
+
+```bash
+fastdub -i ./input_folder -ytu -ytu-ps private -ytu-t
+```
+
+---
+
+## Advanced Usage
+
+### Dynamic Voice Anchors
+
+Change the active voice actor for specific sections by inserting anchor tokens in your subtitle file.
+
+Example SRT subtitle content:
+
+```srt
+1
+00:00:01,000 --> 00:00:04,000
+!:Yuriy Hello, welcome to this video!
+
+2
+00:00:04,500 --> 00:00:08,000
+!:Elena Here is the next speaker.
+```
+
+If voice anchors are updated and cached files need to be refreshed, clear the cache using `-rc`:
+
+```bash
+fastdub -i ./input_folder -rc 1
+```
+
+---
+
+## Command Line Arguments Reference
+
+```text
+usage: fastdub [-h] [-rc {0,1,2}] [-ra | --cleanup-audio | -n-ra | --no-cleanup-audio]
+               [-ev | --export-video | -n-ev | --no-export-video] [-l LANGUAGE]
+               [-ll {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}]
+               [-tc THREADS_COUNT] -i INPUT [-vf VIDEO_FORMAT] [-sf SUBTITLES_FORMAT]
+               [-En EXCLUDE [EXCLUDE ...]] [-Eu EXCLUDE_UNDERSCORE]
+               [-sc | --sidechain | -n-sc | --no-sidechain]
                [-sc-args SIDECHAIN_FFMPEG_PARAMS] [-sc-lvl SIDECHAIN_LEVEL_SC]
-               [-v {...}]
-               [-a ALIGN] [-v-set-a VOICE_SET_ANCHOR] [-fll {trace,debug,verbose,info,warning,error,fatal,panic,quiet}]
-               [-y | --confirm | -n-y | --no-confirm] [-af AUDIO_FORMAT] [-wm WATERMARK] [-tb | --traceback | -n-tb | --no-traceback] [-yt]      
-               [-ak API_KEYS [API_KEYS ...]] [-yts] [-yts-l YOUTUBE_SEARCH_LIMIT] [-yts-rg YOUTUBE_SEARCH_REGION] [-ytu]
+               [-v VOICE] [-a ALIGN] [-v-set-a VOICE_SET_ANCHOR]
+               [-fll {trace,debug,verbose,info,warning,error,fatal,panic,quiet}]
+               [-y | --confirm | -n-y | --no-confirm] [-af AUDIO_FORMAT] [-wm WATERMARK]
+               [-tb | --traceback | -n-tb | --no-traceback] [-yt]
+               [-ak API_KEYS [API_KEYS ...]] [-yts] [-yts-l YOUTUBE_SEARCH_LIMIT]
+               [-yts-rg YOUTUBE_SEARCH_REGION] [-ytu]
                [-ytu-ps {private,public,unlisted}] [-ytu-t] [-tr] [--rewrite-srt | --no-rewrite-srt]
-               [-ts {...}]
-
-fastdub is a tool for dubbing videos by subtitle files.
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -rc {0,1,2}, --remove-cache {0,1,2}
-                        Remove all cache (_cached_texts directory) files
-                                0 - No remove cache
-                                1 - Delete cache before voice acting
-                                2 - Delete cache after voice acting (default)
-  -ra, --cleanup-audio, -n-ra, --no-cleanup-audio
-                        Remove result audio if video exists (default True) (default: True)
-  -ev, --export-video, -n-ev, --no-export-video
-  -l LANGUAGE, --language LANGUAGE
-                        Subtitles language (ru)
-  -ll {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}, --loglevel {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}
-                        Program log level
-  -tc THREADS_COUNT, --threads-count THREADS_COUNT
-                        Process count to download (pass to cpu count, < 2 to disable)
-                                *N = N * cpu count
-
-Input:
-  -i INPUT, --input INPUT
-                        Input directory/YouTube Playlist/Video URL.
-  -vf VIDEO_FORMAT, --video-format VIDEO_FORMAT
-                        Video format (default: .mp4).
-  -sf SUBTITLES_FORMAT, --subtitles-format SUBTITLES_FORMAT
-                        Subtitles format (default: .srt).
-
-Input Exclude:
-  -En EXCLUDE [EXCLUDE ...], --exclude EXCLUDE [EXCLUDE ...]
-                        Exclude <name> (glob)
-  -Eu EXCLUDE_UNDERSCORE, --exclude-underscore EXCLUDE_UNDERSCORE
-                        Exclude files starts with underscore
-
-Audio Ducking:
-  -sc, --sidechain, -n-sc, --no-sidechain
-                        Enable audio side chain compress (ducking) (default: True)
-  -sc-args SIDECHAIN_FFMPEG_PARAMS, --sidechain-ffmpeg-params SIDECHAIN_FFMPEG_PARAMS
-                        sidechain FFmpeg parameters (default '')
-  -sc-lvl SIDECHAIN_LEVEL_SC, --sidechain-level-sc SIDECHAIN_LEVEL_SC
-                        Set sidechain gain. Range is between 0.015625 and 64. (default 0.8)
-
-Voicer:
-  -v {...}, --voice {...}
-                        SAPI voice for voice acting.
-  -a ALIGN, --align ALIGN
-                        Audio fit align (divisor)
-                                1 = right
-                                2 = center (default)
-  -v-set-a VOICE_SET_ANCHOR, --voice-set-anchor VOICE_SET_ANCHOR
-                        Anchor indicating voice actor change (default "!:")
-
-FFmpeg Output:
-  -fll {trace,debug,verbose,info,warning,error,fatal,panic,quiet}, --ffmpeg-loglevel {trace,debug,verbose,info,warning,error,fatal,panic,quiet}  
-                        FFmpegWrapper loglevel
-  -y, --confirm, -n-y, --no-confirm
-                        Don't ask for confirmation (default: True)
-  -af AUDIO_FORMAT, --audio-format AUDIO_FORMAT
-                        Out audio files format (default wav)
-  -wm WATERMARK, --watermark WATERMARK
-                        Add watermark to output video
-
-Terminal Output:
-  -tb, --traceback, -n-tb, --no-traceback
-                        Show debug traceback (default: False)
-
-YouTube:
-  -yt, --youtube
-  -ak API_KEYS [API_KEYS ...], --api-keys API_KEYS [API_KEYS ...]
-                        Youtube API key/s
-
-YouTube Search:
-  -yts, --youtube-search
-                        The input data is a query for searching on YouTube. (Adds "?" at the start of input)
-  -yts-l YOUTUBE_SEARCH_LIMIT, --youtube-search-limit YOUTUBE_SEARCH_LIMIT
-                        Sets limit to the number of results. Defaults to 20.
-  -yts-rg YOUTUBE_SEARCH_REGION, --youtube-search-region YOUTUBE_SEARCH_REGION
-                        Sets the result region. Defaults to "US".
-
-YouTube Upload:
-  -ytu, --youtube-upload
-                        yt_upload video to YouTube channel after voice acting.
-  -ytu-ps {private,public,unlisted}, --privacy-status {private,public,unlisted}
-                        Video privacy status (If not private, errors are possible)
-  -ytu-t, --youtube-upload-translate
-                        Translate title and description on upload. (+ Arguments from translate argument group)
-
-Translate:
-  -tr, --translate      Translate input subtitles files
-  --rewrite-srt, --no-rewrite-srt
-                        Rewrite input subtitles files.
-                        If not, add "_" to the beginning of the original subtitle file. (default: False)
-  -ts {...}, --translate-service {...}
-                        Subtitle translation service. (default google)
+               [-ts TRANSLATE_SERVICE]
 ```
 
-**If the voice set after "!:" is not selected during voiceover, clear the cache with the -rc argument**
+---
 
-## Example
+## Python API Usage
 
-> python -m fastdub -i DirToDub -v "[Yuriy](https://rhvoice.su/downloads/?voice=yuriy&type=sapi)" --no-sidechain -sf vtt
-> -vf mkv
+FastDub modules can be imported directly into Python applications:
 
-All files in the folder will be voices (*.mkv, *.vtt)
+```python
+from fastdub import GlobalSettings, dubber
 
-Default is mp4 video and srt subtitles.
+GlobalSettings.language = "ru"
+GlobalSettings.threads_count = 4
 
-Then:
-_name and name2 will be announced, and the results will be saved to a folder with the appropriate name._
+# Perform dubbing operation programmatically
+dubber.dub(
+    input_dir="./media",
+    voice="Yuriy",
+    export_video=True,
+    sidechain=True
+)
+```
 
-## YT Example
+---
 
-> python -m fastdub **-yt** -i https://youtu.be/DD5UKQggXTc
-> -v "[Yuriy](https://rhvoice.su/downloads/?voice=yuriy&type=sapi)"
-> -l ru
+## Development & Publishing
 
-### YouTube Search Example
+FastDub uses [Poetry](https://python-poetry.org/) for build backend management.
 
-> python -m fastdub -yt **-yts** -i "#annoyingorange" -l ru
+### Build Package
 
-## Translate Example
+```bash
+poetry build
+```
 
-> python -m fastdub -i DirToDub -tr **-ts iciba** _-l [ru](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)_
+### Publish Package
 
-Default service is Google.
+```bash
+poetry publish
+```
 
-## Other
+---
 
-### The `fastdub.utils` module stores helper functions.
+## Issues & Support
 
-### You can write your issues on [GitHub](https://github.com/NIKDISSV-Forever/fastdub/issues) in English or in Russian.
+If you encounter any issues or have feature requests, please open an issue on [GitHub Issues](https://github.com/ndenissov/FastDub/issues).
+
+---
+
+## License
+
+Distributed under the MIT License. See [LICENSE](https://github.com/ndenissov/FastDub/blob/main/LICENSE) for details.
