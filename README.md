@@ -57,6 +57,7 @@ pip install "FastDub[ALL]"
 | `TR` | Subtitle translation support | `pip install "FastDub[TR]"` |
 | `YT` | YouTube downloading and search | `pip install "FastDub[YT]"` |
 | `YTU` | YouTube video uploading | `pip install "FastDub[YTU]"` |
+| `tortoise` | Tortoise-TTS engine support (Heavy) | `pip install "FastDub[tortoise]"` |
 | `ALL` | All optional features combined | `pip install "FastDub[ALL]"` |
 
 #### Via Poetry
@@ -149,6 +150,26 @@ If voice anchors are updated and cached files need to be refreshed, clear the ca
 ```bash
 fastdub -i ./input_folder -rc 1
 ```
+
+### Tortoise-TTS Support
+
+FastDub now supports [Tortoise-TTS](https://github.com/neonbjb/tortoise-tts) for high-quality voice cloning and text-to-speech. Tortoise generates highly realistic voices but requires significantly more processing power (CUDA is highly recommended).
+
+1. **Install with Tortoise support**:
+   ```bash
+   pip install "FastDub[tortoise]"
+   ```
+2. **Use the Tortoise engine**:
+   Specify `--tts-engine tortoise`. You can use any Tortoise voice preset (e.g., `random`, `angie`, `train_atkins`) as the voice argument.
+   ```bash
+   fastdub -i ./input_folder -te tortoise -v random
+   ```
+3. **Tortoise Presets (Quality vs Speed)**:
+   By default, FastDub uses the `fast` preset for Tortoise. You can change this using the `--tortoise-preset` argument:
+   ```bash
+   fastdub -i ./input_folder -te tortoise -tp high_quality -v angie
+   ```
+   *Available presets*: `ultra_fast`, `fast`, `standard`, `high_quality`.
 
 ---
 
