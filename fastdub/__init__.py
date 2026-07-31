@@ -226,14 +226,15 @@ Default service is Google.
 
 ### The `fastdub.utils` module stores helper functions.
 
-### You can write your issues on [GitHub](https://github.com/NIKDISSV-Forever/fastdub/issues) in English or in Russian.
+### You can write your issues on [GitHub](https://github.com/ndenissov/FastDub/issues) in English or in Russian.
 """
 from __future__ import annotations
+
+__author__ = 'Nikita Denissov'
 
 from multiprocessing import cpu_count
 
 __all__ = ('PrettyViewPrefix', 'GlobalSettings')
-__author__ = 'NIKDISSV'
 
 
 class GlobalSettings:

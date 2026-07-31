@@ -174,7 +174,7 @@ def parse_args() -> argparse.Namespace:
 
 def banner():
     rich.print('[b][i]FastDub[/][/]\n'
-               'https://github.com/NIKDISSV-Forever/FastDub')
+               'https://github.com/ndenissov/FastDub')
 
 
 def main():
