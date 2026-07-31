@@ -106,8 +106,13 @@ def parse_args() -> argparse.Namespace:
                                help='Set sidechain gain. Range is between 0.015625 and 64. (default 0.8)')
 
     voicer_group = arg_parser.add_argument_group('Voicer')
-    voicer_group.add_argument('-v', '--voice', type=str.lower, choices=voicer.VOICES_NAMES.keys(),
-                              help='SAPI voice for voice acting.')
+    voicer_group.add_argument('-te', '--tts-engine', default='pyttsx3', choices=('pyttsx3', 'tortoise'),
+                              help='TTS engine to use. (default: pyttsx3)')
+    voicer_group.add_argument('-tp', '--tortoise-preset', default='fast',
+                              choices=('ultra_fast', 'fast', 'standard', 'high_quality'),
+                              help='Tortoise-TTS preset. Lower is faster but lower quality. (default: fast)')
+    voicer_group.add_argument('-v', '--voice', type=str.lower,
+                              help='Voice actor name (e.g. SAPI voice or Tortoise preset voice).')
     voicer_group.add_argument('-a', '--align', default=2., type=float,
                               help='Audio fit align (divisor)'
                                    '\n\t1 = right'
@@ -187,6 +192,15 @@ def main():
     logging.basicConfig(format='%(levelname)s: [%(asctime)s] %(message)s')
     logging.getLogger().setLevel(args.loglevel)
 
+    if args.tts_engine == 'tortoise':
+        from fastdub.voicer_tortoise import TortoiseVoicer
+        dubber.VOICER = TortoiseVoicer(anchor=args.voice_set_anchor, preset=args.tortoise_preset)
+    else:
+        if args.voice and args.voice.lower() not in voicer.VOICES_NAMES:
+            import sys
+            logging.error(f"Invalid pyttsx3 voice: {args.voice!r}. Choose from: {', '.join(voicer.VOICES_NAMES.keys())}")
+            sys.exit(2)
+
     remove_cache = args.remove_cache
     if remove_cache == 1:
         dubber.VOICER.cleanup()
@@ -234,7 +248,7 @@ def main():
                   ).dub_dir(videos, video_format, subtitles_format)
 
     if remove_cache == 2:
-        voicer.Voicer().cleanup()
+        dubber.VOICER.cleanup()
 
     if fastdub.youtube.yt_upload.SUPPORTED and args.youtube_upload:
         fastdub.youtube.yt_upload.uploader.Uploader(args.privacy_status,
