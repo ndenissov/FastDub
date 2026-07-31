@@ -1,5 +1,0 @@
-chardet
-pyttsx3
-pydub
-rich
-tqdm
