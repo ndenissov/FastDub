@@ -1,6 +1,6 @@
 [project]
 name = "fastdub"
-version = "3.8.1"
+version = "3.9.0"
 description = "A Python CLI package for voice over subtitles, with the ability to embed in video, audio ducking, and dynamic voice changer for a single track; auto translating; download and upload to YouTube supports"
 authors = [
     { name = "Nikita Denissov", email = "n.denissov@proton.me" }
@@ -63,7 +63,7 @@ ytu = [
     "oauth2client>=4.1.3",
 ]
 tortoise = [
-    "tortoise-tts>=3.0.0",
+    "tortoise-tts>=0.1.0",
 ]
 all = [
     "translators>=5.9.3",
@@ -73,7 +73,7 @@ all = [
     "pafy>=0.5.5",
     "google-api-python-client>=2.160.0",
     "oauth2client>=4.1.3",
-    "tortoise-tts>=3.0.0",
+    "tortoise-tts>=0.1.0",
 ]
 
 [project.scripts]

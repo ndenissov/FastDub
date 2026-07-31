@@ -1,13 +1,15 @@
+# 3.9.0
+
+## Features
+
+- Added optional **Tortoise-TTS** engine support (Issue #6) for voice cloning. Can be invoked with `--tts-engine tortoise` and `--tortoise-preset`.
+
 # 3.8.1
 
 ## Build & Metadata
 
 - Migrated build configuration from `setup.py` to `pyproject.toml` using Poetry backend.
 - Updated project author and repository links to Nikita Denissov (`ndenissov`).
-
-## Features
-
-- Added optional **Tortoise-TTS** support (Issue #6) for high-quality voice cloning. Can be invoked with `--tts-engine tortoise`.
 
 ## Documentation
 
