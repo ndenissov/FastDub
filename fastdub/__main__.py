@@ -182,6 +182,32 @@ def banner():
                'https://github.com/ndenissov/FastDub')
 
 
+def _check_root() -> None:
+    try:
+        import os
+        is_admin = False
+        if hasattr(os, 'geteuid'):
+            is_admin = (os.geteuid() == 0)
+        elif hasattr(os, 'getuid'):
+            is_admin = (os.getuid() == 0)
+        else:
+            try:
+                import ctypes
+                is_admin = bool(ctypes.windll.shell32.IsUserAnAdmin())
+            except Exception:
+                is_admin = False
+
+        if is_admin:
+            logging.warning(
+                "Running FastDub with administrator/root privileges is useless and not the intended workflow: "
+                "the application does not require elevated privileges and may produce files with restricted access. "
+                "(Запуск FastDub от root/администратора бесполезен: повышенные привилегии не требуются, "
+                "это не задуманный путь работы)."
+            )
+    except Exception:
+        pass
+
+
 def main():
     args = parse_args()
 
@@ -191,6 +217,8 @@ def main():
         rich.traceback.install(extra_lines=0, word_wrap=True)
     logging.basicConfig(format='%(levelname)s: [%(asctime)s] %(message)s')
     logging.getLogger().setLevel(args.loglevel)
+
+    _check_root()
 
     if args.tts_engine == 'tortoise':
         from fastdub.voicer_tortoise import TortoiseVoicer

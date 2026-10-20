@@ -16,10 +16,14 @@ class UnknownVoice(Exception):
     __slots__ = ()
 
 
-_voices = pyttsx3.init().proxy.getProperty('voices')
-VOICES_NAMES = {i.name.casefold(): i for i in _voices}
-VOICES_ID = {i.id: i for i in _voices}
-del _voices
+try:
+    _voices = pyttsx3.init().proxy.getProperty('voices')
+    VOICES_NAMES = {i.name.casefold(): i for i in _voices}
+    VOICES_ID = {i.id: i for i in _voices}
+    del _voices
+except Exception:
+    VOICES_NAMES = {}
+    VOICES_ID = {}
 
 
 def _no_update_voice_anchor(_):
@@ -48,12 +52,17 @@ class Voicer:
         self.cache_dir = cache_dir
         self._nul_file = str(nul_file)
 
-        self.engine = pyttsx3.init(tts_driver_name, tts_debug)
+        try:
+            self.engine = pyttsx3.init(tts_driver_name, tts_debug)
+        except Exception:
+            self.engine = None
 
     def cleanup(self):
         rmtree(self.cache_dir)
 
     def set_voice(self, voice: str):
+        if not self.engine:
+            raise RuntimeError("pyttsx3 engine is not available. Please ensure eSpeak or eSpeak-ng is installed.")
         voice_name = voice.casefold()
         voice_property = self.engine.proxy.getProperty('voice')
         voice = VOICES_NAMES.get(voice_name)
@@ -66,6 +75,9 @@ class Voicer:
         text = text.strip()
         if not text:
             return self._nul_file
+
+        if not self.engine:
+            raise RuntimeError("pyttsx3 engine is not available. Please ensure eSpeak or eSpeak-ng is installed.")
 
         if self._update_voice_anchor((lines := text.splitlines())[0]):
             text = '\n'.join(lines[1:])
