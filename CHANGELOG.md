@@ -1,3 +1,16 @@
+# 3.9.1
+
+## Bug Fixes & Compatibility
+
+- Added conditional `audioop-lts` dependency for Python 3.13+ where `audioop` was removed from the standard library.
+- Made `pyttsx3` voice initialization resilient against missing eSpeak/eSpeak-ng drivers on Linux and headless environments.
+
+## Security & Dependencies
+
+- Updated dependency version constraints (`pyttsx3`, `tqdm`, `translators`, `download-youtube-subtitle`, `google-api-python-client`) while maintaining backward compatibility with Python >= 3.9.
+- Added root/administrator execution warning in CLI informing users that running with elevated privileges is unnecessary and not intended.
+- Updated `poetry.lock` with latest compatible versions to address upstream security advisories.
+
 # 3.9.0
 
 ## Features
